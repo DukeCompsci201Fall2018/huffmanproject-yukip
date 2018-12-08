@@ -80,13 +80,14 @@ public class HuffProcessor {
 	}
 
 	private void writeHeader(HuffNode root, BitOutputStream out) {
-		if (root.myWeight == 0) {
+		if (root.myLeft == null && root.myRight == null) {
+			out.writeBits(1, 1);			
+			out.writeBits(BITS_PER_INT + 1, root.myValue);
+		}
+		else {
 			out.writeBits(1, 0);
 			writeHeader(root.myLeft, out);
 			writeHeader(root.myRight, out);
-		}
-		else {
-			out.writeBits(BITS_PER_INT + 1, root.myValue);
 		}
 	}
 
@@ -97,7 +98,7 @@ public class HuffProcessor {
 	}
 
 	private void codingHelper(HuffNode root, String path, String[] encodings) {
-		if (root.myWeight != 0) {
+		if (root.myLeft == null && root.myRight == null) {
 			encodings[root.myValue] = path;
 			return;
 		}
