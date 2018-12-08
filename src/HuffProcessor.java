@@ -69,7 +69,7 @@ public class HuffProcessor {
 			if (bits == -1) {
 				break;
 			}			
-			bits = in.readBits(1); 
+			bits = in.readBits(BITS_PER_WORD); 
 			String code = codings[bits];
 			out.writeBits(code.length(), Integer.parseInt(code, 2));
 			
