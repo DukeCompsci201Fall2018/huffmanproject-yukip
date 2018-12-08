@@ -57,19 +57,19 @@ public class HuffProcessor {
 		writeHeader(root, out);
 		
 		in.reset();
-		readCompressedBits(codings, in, out);
+		writeCompressedBits(codings, in, out);
 		
 		out.close();
 	}
 
-	private void readCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
+	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
 		int bits = 0;
 		
 		while (true) {
 			if (bits == -1) {
 				break;
 			}			
-			bits = in.readBits(BITS_PER_WORD); 
+			bits = in.readBits(1); 
 			String code = codings[bits];
 			out.writeBits(code.length(), Integer.parseInt(code, 2));
 		}
