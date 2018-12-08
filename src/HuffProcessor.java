@@ -1,3 +1,4 @@
+import java.util.PriorityQueue;
 
 /**
  * Although this class has a history of several years,
@@ -60,18 +61,54 @@ public class HuffProcessor {
 		
 		out.close();
 	}
+
+	private String[] makeCodingsFromTree(HuffNode root) {
+		String[] encodings = new String[ALPH_SIZE + 1];
+		codingHelper(root, "", encodings);
+		return encodings;
+	}
+
+	private void codingHelper(HuffNode root, String path, String[] encodings) {
+		if (root.myWeight != 0) {
+			encodings[root.myValue] = path;
+			return;
+		}
+		codingHelper(root.myLeft, path + "0", encodings);
+		codingHelper(root.myRight, path + "1", encodings);	
+	}
+
+	private HuffNode makeTreeFromCounts(int[] counts) {
+		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
+		
+		for (int i = 0; i < counts.length; i++) {
+			if (counts[i] > 0) {
+				pq.add(new HuffNode(i, counts[i], null, null));
+			}
+		}
+		
+		while (pq.size() > 1) {
+			HuffNode left = pq.remove();
+			HuffNode right = pq.remove();
+			HuffNode t = new HuffNode(0, left.myWeight + right.myWeight, left, right);
+			pq.add(t);
+		}
+		
+		HuffNode root = pq.remove();
+		return root;
+	}
+
 	private int[] readForCounts(BitInputStream in) {
 		int[] frequencies = new int[ALPH_SIZE + 1];
 		frequencies[PSEUDO_EOF] = 1;
+		int bits;
 		
 		while (true) {
-			int bits = in.readBits(BITS_PER_WORD);
+			bits = in.readBits(BITS_PER_WORD);
 			if (bits == -1) {
 				break;
-			}
-			frequencies[bits] += 1;
-		}
-		
+			}			
+			frequencies[bits] += 1;			
+		}		
 		return frequencies;
 	}
 
